@@ -12,7 +12,6 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-
 /**
  * Tracks library autoloader
  *

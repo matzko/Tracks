@@ -1,222 +1,284 @@
 <?php
 /**
- * Repository to load and save domain event-based entities
- * 
- * @author Sean Crystal <sean.crystal@gmail.com>
+ * Tracks CQRS Framework
+ *
+ * PHP Version 5.3
+ *
+ * @category  Tracks
+ * @package   EventStore
+ * @author    Sean Crystal <sean.crystal@gmail.com>
  * @copyright 2011 Sean Crystal
- * @license http://www.opensource.org/licenses/BSD-3-Clause
- * @link https://github.com/spiralout/Tracks
+ * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ * @link      https://github.com/spiralout/Tracks
  */
 
 namespace Tracks\EventStore;
 use Tracks\EventHandler\IEventRouter;
 use Tracks\Model\AggregateRoot, Tracks\Model\Entity, Tracks\Model\Guid;
 
-class Repository {
-	
-   const SNAPSHOT_FREQUENCY = 100;
+/**
+ * Repository to load and save domain event-based entities
+ *
+ * @category  Tracks
+ * @package   EventStore
+ * @author    Sean Crystal <sean.crystal@gmail.com>
+ * @copyright 2011 Sean Crystal
+ * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ * @link      https://github.com/spiralout/Tracks
+ */
+class Repository
+{
 
-   /**
-    * Constructor
-    * 
-    * @param IEventStore $eventStore
-    * @param IEventRouter $router
-    * @param ISnapshotStore $snapshotStore 
-    */
-   public function __construct(IEventStore $eventStore, IEventRouter $router, ISnapshotStore $snapshotStore) {
-      $this->eventStore = $eventStore;
-		$this->snapshotStore = $snapshotStore;
-		$this->router = $router;
-		$this->snapshotFrequency = self::SNAPSHOT_FREQUENCY;
-   }
+    const SNAPSHOT_FREQUENCY = 100;
 
-   /**
-    * Load an entity by a guid
-    * 
-    * @param Guid $guid
-    * @return \Tracks\Model\AggregateRoot
-    */
-   public function load(Guid $guid) {
-      if (is_null($aggregateRoot = $this->loadEntity($guid))) {
-         return NULL;
-      }
+    /**
+     * Constructor
+     *
+     * @param IEventStore    $eventStore    The Event Store
+     * @param IEventRouter   $router        The Event Router
+     * @param ISnapshotStore $snapshotStore The Snapshot Store
+     *
+     * @return null
+     */
+    public function __construct(
+        IEventStore $eventStore,
+        IEventRouter $router,
+        ISnapshotStore $snapshotStore
+    ) {
+        $this->eventStore = $eventStore;
+        $this->snapshotStore = $snapshotStore;
+        $this->router = $router;
+        $this->snapshotFrequency = self::SNAPSHOT_FREQUENCY;
+    }
 
-      if (($children = $aggregateRoot->getAllChildEntities())) {         
-         foreach ($children as &$child) {
-            $child = $this->loadEntity($child->getGuid(), $child);
-         }            
-      }
+    /**
+     * Load an entity by a guid
+     *
+     * @param Guid $guid An Entity's GUID
+     *
+     * @return \Tracks\Model\AggregateRoot
+     */
+    public function load(Guid $guid)
+    {
+        if (is_null($aggregateRoot = $this->_loadEntity($guid))) {
+            return null;
+        }
 
-      return $aggregateRoot;
-   }
+        if (($children = $aggregateRoot->getAllChildEntities())) {
+            foreach ($children as &$child) {
+                $child = $this->_loadEntity($child->getGuid(), $child);
+            }
+        }
 
-   /**
-    * Set the frequency with which to take snapshots of entities
-    * 
-    * @param int $numEvents 
-    */
-	public function setSnapshotFrequency($numEvents = self::SNAPSHOT_FREQUENCY) {
-      assert('$numEvents > 0');
-      
-		$this->snapshotFrequency = $numEvents;
-	}
+        return $aggregateRoot;
+    }
 
-   /**
-    * Save an aggregate root, and call event handlers for all new events
-    * 
-    * @param AggregateRoot $aggregateRoot
-    */
-   public function save(AggregateRoot $aggregateRoot) {
-      if (count($aggregateRoot->getAllAppliedEvents()) == 0) {
-			return;	
-		}
+    /**
+     * Set the frequency with which to take snapshots of entities
+     *
+     * @param int $numEvents The snapshot threshhold as a max number of events
+     *                       to allow before a snapshot happens
+     *
+     * @return null
+     */
+    public function setSnapshotFrequency($numEvents = self::SNAPSHOT_FREQUENCY)
+    {
+        assert('is_int($numEvents)');
+        assert('$numEvents > 0');
+        $this->snapshotFrequency = $numEvents;
+    }
 
-      $this->eventStore->save($aggregateRoot);
-		$this->routeEvents($aggregateRoot);
-      $this->updateVersionsAndClearEvents($aggregateRoot);
-      $this->saveSnapshots($aggregateRoot);
-   }
+    /**
+     * Save an aggregate root, and call event handlers for all new events
+     *
+     * @param AggregateRoot $aggregateRoot An Aggregate Root
+     *
+     * @return null
+     */
+    public function save(AggregateRoot $aggregateRoot)
+    {
+        if (count($aggregateRoot->getAllAppliedEvents()) == 0) {
+            return;
+        }
 
-   /**
-    * Store an entity in the identity map
-    * 
-    * @param Entity $entity 
-    */
-   private function storeInIdentityMap(Entity $entity) {
-      $this->identityMap[(string) $entity->getGuid()] = $entity;
-   }
+        $this->eventStore->save($aggregateRoot);
+        $this->_routeEvents($aggregateRoot);
+        $this->_updateVersionsAndClearEvents($aggregateRoot);
+        $this->_saveSnapshots($aggregateRoot);
+    }
 
-   /**
-    * Attempt to load an entity from the identity map
-    * 
-    * @param Guid $guid
-    * @return \Tracks\Model\Entity
-    */
-   private function loadFromIdentityMap(Guid $guid) {
-      return (isset($this->identityMap[(string) $guid]) ? $this->identityMap[(string) $guid] : NULL);
-   }
+    /**
+     * Store an entity in the identity map
+     *
+     * @param Entity $entity An Entity
+     *
+     * @return null
+     */
+    private function _storeInIdentityMap(Entity $entity)
+    {
+        $this->_identityMap[(string) $entity->getGuid()] = $entity;
+    }
 
-   /**
-    * Load an entity from it's event history
-    * 
-    * @param Guid $guid
-    * @param Entity $entity
-    * @return \Tracks\Model\Entity
-    */
-   private function loadFromHistory(Guid $guid, Entity $entity = NULL) {
-      $events = $this->eventStore->getAllEvents($guid);
-      
-      if (is_null($entity)) {
-	      if (is_null($modelClass = $this->eventStore->getType($guid))) {
-            return NULL;
-         }
-         
-			$entity = new $modelClass;	
-		}
-		
-      $entity->loadHistory($events);
+    /**
+     * Attempt to load an entity from the identity map
+     *
+     * @param Guid $guid An Entity's GUID
+     *
+     * @return \Tracks\Model\Entity
+     */
+    private function _loadFromIdentityMap(Guid $guid)
+    {
+        return isset($this->_identityMap[(string) $guid])
+            ? $this->_identityMap[(string) $guid]
+            : null;
+    }
 
-      return $entity;
-   }
+    /**
+     * Load an entity from it's event history
+     *
+     * @param Guid   $guid   An Entity's GUID
+     * @param Entity $entity That Entity
+     *
+     * @return \Tracks\Model\Entity
+     */
+    private function _loadFromHistory(Guid $guid, Entity $entity = null)
+    {
+        $events = $this->eventStore->getAllEvents($guid);
 
-   /**
-    * Load an entity into memory
-    * 
-    * @param Guid $guid
-    * @param Entity $entity
-    * @return Tracks\Model\Entity
-    */
-   private function loadEntity(Guid $guid, Entity $entity = NULL) {
-      $loadedEntity = $this->loadFromIdentityMap($guid);
+        if (is_null($entity)) {
+            if (is_null($modelClass = $this->eventStore->getType($guid))) {
+                return null;
+            }
 
-      if (is_null($loadedEntity)) {
-         $loadedEntity = $this->loadFromSnapshot($guid);
-      }
+            $entity = new $modelClass;
+        }
 
-      if (is_null($loadedEntity)) {
-         $loadedEntity = $this->loadFromHistory($guid, $entity);
-      }
+        $entity->loadHistory($events);
 
-      if (is_null($loadedEntity)) {
-         return NULL;
-      }
-      
-      $this->storeInIdentityMap($loadedEntity);
+        return $entity;
+    }
 
-      return $loadedEntity;
-   }
+    /**
+     * Load an entity into memory
+     *
+     * @param Guid   $guid   An Entity's GUID
+     * @param Entity $entity That Entity
+     *
+     * @return Tracks\Model\Entity
+     */
+    private function _loadEntity(Guid $guid, Entity $entity = null)
+    {
+        $loadedEntity = $this->_loadFromIdentityMap($guid);
 
-   /**
-    * Route all new events on an aggregate to their appropriate handlers
-    * 
-    * @param AggregateRoot $aggregateRoot 
-    */
-   private function routeEvents(AggregateRoot $aggregateRoot) {
-      foreach ($aggregateRoot->getAllAppliedEvents() as $event) {
-         $this->router->route($event);
-      }
-   }
+        if (is_null($loadedEntity)) {
+            $loadedEntity = $this->_loadFromSnapshot($guid);
+        }
 
-   /**
-    * Attempt to load an entity from a snapshot
-    * 
-    * @param Guid $guid
-    * @return \Tracks\Model\Entity
-    */
-   private function loadFromSnapshot(Guid $guid) {
-      if (is_null($entity = $this->snapshotStore->load($guid))) {
-         return NULL;
-      }
+        if (is_null($loadedEntity)) {
+            $loadedEntity = $this->_loadFromHistory($guid, $entity);
+        }
 
-		$entity->loadHistory($this->eventStore->getEventsFromVersion($entity->getGuid(), $entity->getVersion() + 1));
+        if (is_null($loadedEntity)) {
+            return null;
+        }
 
-      return $entity;
-   }
+        $this->_storeInIdentityMap($loadedEntity);
 
-   /**
-    * Update an entity's in-memory version and clear applied events
-    * This should be called after an entity's events have been saved
-    */
-   private function updateVersionsAndClearEvents(AggregateRoot $aggegrateRoot) {
-      foreach ($aggegrateRoot->getAllEntities() as $entity) {
-         $entity->incVersion(count($entity->getAppliedEvents()));
-         $entity->clearAppliedEvents();
-      }
-   }
+        return $loadedEntity;
+    }
 
-   /**
-    * Attempt to save a snapshot for all entites in an aggregate root
-    * 
-    * @param AggregateRoot $aggregateRoot 
-    */
-   private function saveSnapshots(AggregateRoot $aggregateRoot) {
-      foreach ($aggregateRoot->getAllEntities() as $entity) {
-         $this->saveSnapshot($entity);
-      }
-   }
+    /**
+     * Route all new events on an aggregate to their appropriate handlers
+     *
+     * @param AggregateRoot $aggregateRoot An Aggregate Root
+     *
+     * @return null
+     */
+    private function _routeEvents(AggregateRoot $aggregateRoot)
+    {
+        foreach ($aggregateRoot->getAllAppliedEvents() as $event) {
+            $this->router->route($event);
+        }
+    }
 
-   /**
-    * Try to save a snapshot of an entity if frequency determines it is time
-    * 
-    * @param Entity $entity 
-    */
-   private function saveSnapshot(Entity $entity) {
-      $state = clone $entity;
-      $state->clearAppliedEvents();
+    /**
+     * Attempt to load an entity from a snapshot
+     *
+     * @param Guid $guid An Entity's GUID
+     *
+     * @return \Tracks\Model\Entity
+     */
+    private function _loadFromSnapshot(Guid $guid)
+    {
+        if (is_null($entity = $this->snapshotStore->load($guid))) {
+            return null;
+        }
 
-      $snapshot = $this->snapshotStore->load($state->getGuid());
+        $entity->loadHistory(
+            $this->eventStore->getEventsFromVersion(
+                $entity->getGuid(),
+                $entity->getVersion() + 1
+            )
+        );
 
-      if ((!$snapshot && $state->getVersion() >= $this->snapshotFrequency)
-         || ($snapshot && ($state->getVersion() - $snapshot->getVersion()) >= $this->snapshotFrequency)
-      ) {
-         echo 'Saving snapshot', PHP_EOL;
-			$this->snapshotStore->save($entity);
-      }
-   }
+        return $entity;
+    }
 
-	/** @var int */
-	private $snapshotFrequency;
-   
-   /** @var array */
-   private $identityMap = array();
+    /**
+     * Update an entity's in-memory version and clear applied events
+     *
+     * This should be called after an entity's events have been saved.
+     *
+     * @param AggregateRoot $aggregateRoot An Aggregate Root
+     *
+     * @return null
+     */
+    private function _updateVersionsAndClearEvents(AggregateRoot $aggregateRoot)
+    {
+        foreach ($aggregateRoot->getAllEntities() as $entity) {
+            $entity->incVersion(count($entity->getAppliedEvents()));
+            $entity->clearAppliedEvents();
+        }
+    }
+
+    /**
+     * Attempt to save a snapshot for all entites in an aggregate root
+     *
+     * @param AggregateRoot $aggregateRoot An Aggregate Root
+     *
+     * @return null
+     */
+    private function _saveSnapshots(AggregateRoot $aggregateRoot)
+    {
+        foreach ($aggregateRoot->getAllEntities() as $entity) {
+            $this->_saveSnapshot($entity);
+        }
+    }
+
+    /**
+     * Try to save a snapshot of an entity if frequency determines it is time
+     *
+     * @param Entity $entity An Entity
+     *
+     * @return null
+     */
+    private function _saveSnapshot(Entity $entity)
+    {
+        $state = clone $entity;
+        $state->clearAppliedEvents();
+
+        $snapshot = $this->snapshotStore->load($state->getGuid());
+
+        if ((!$snapshot && $state->getVersion() >= $this->_snapshotFrequency)
+            || ($snapshot && ($state->getVersion() - $snapshot->getVersion()) >= $this->_snapshotFrequency)
+        ) {
+            $this->snapshotStore->save($entity);
+        }
+    }
+
+    /** @var int */
+    private $_snapshotFrequency;
+
+    /** @var array */
+    private $_identityMap = array();
 }
