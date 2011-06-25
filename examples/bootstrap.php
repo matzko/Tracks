@@ -1,15 +1,16 @@
 <?php
 /**
- * Tracks CQRS Framework
+ * Examples
  *
  * PHP Version 5.3
  *
- * @category  Tracks
- * @package   Tracks
- * @author    Sean Crystal <sean.crystal@gmail.com>
- * @copyright 2011 Sean Crystal
- * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
- * @link      https://github.com/spiralout/Tracks
+ * @category   Tracks
+ * @package    Examples
+ * @subpackage Autoloader
+ * @author     Sean Crystal <sean.crystal@gmail.com>
+ * @copyright  2011 Sean Crystal
+ * @license    http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+ * @link       https://github.com/spiralout/Tracks
  */
 
 /**
@@ -21,7 +22,9 @@
  */
 function tracksAutoloader($className)
 {
-    $file = __DIR__
+    $file = dirname(__DIR__)
+        .DIRECTORY_SEPARATOR
+        .'library'
         .DIRECTORY_SEPARATOR
         .str_replace('\\', DIRECTORY_SEPARATOR, $className)
         .'.php';

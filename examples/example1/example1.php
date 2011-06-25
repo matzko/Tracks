@@ -13,7 +13,7 @@
  * @link       https://github.com/spiralout/Tracks
  */
 
-require_once '../../library/Tracks.php';
+require_once dirname(__DIR__).DIRECTORY_SEPARATOR.'bootstrap.php';
 require_once 'Employer.php';
 require_once 'Employee.php';
 require_once 'Position.php';
