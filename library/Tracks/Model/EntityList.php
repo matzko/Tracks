@@ -12,8 +12,8 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-use Tracks\Model\Entity;
 namespace Tracks\Model;
+use Tracks\Model\Entity;
 
 /**
  * Entity list domain object

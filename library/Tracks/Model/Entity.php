@@ -220,7 +220,11 @@ abstract class Entity
         assert('method_exists($this, $handlerMethod)');
 
         if (isset($this->handlers[$eventName])) {
-            throw new HandlerAlreadyRegistered(get_class($this), $eventName, $this->handlers[$eventName]);
+            throw new HandlerAlreadyRegistered(
+                get_class($this),
+                $eventName,
+                $this->handlers[$eventName]
+            );
         }
 
         $this->handlers[$eventName] = $handlerMethod;

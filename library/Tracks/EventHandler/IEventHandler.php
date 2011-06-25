@@ -26,5 +26,12 @@ namespace Tracks\EventHandler;
  */
 interface IEventHandler
 {
+    /**
+     * Execute an event
+     *
+     * @param Tracks\Event\Base $event An Event
+     *
+     * @return null
+     */
     public function execute(\Tracks\Event\Base $event);
 }

@@ -68,7 +68,7 @@ class DirectRouter implements IEventRouter
         if (is_object($handler)
             && !($handler instanceof \Tracks\EventHandler\IEventHandler)
         ) {
-            throw new LogicException('Event handlers must implement \Tracks\EventHandler\IEventHandler');
+            throw new LogicException('Event handlers must implement IEventHandler');
         }
 
         if (!isset($this->_handlers[$eventClass])) {
