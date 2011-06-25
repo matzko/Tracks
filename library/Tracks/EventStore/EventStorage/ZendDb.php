@@ -102,9 +102,10 @@ class ZendDb implements IEventStore
         assert('is_int($version)');
         $select = $this->_dbh->select()
             ->from('event', array('*'))
-            ->where('guid = ? OFFSET ?', (string) $guid, $version)
+            ->where('guid = ?', (string) $guid)
             ->order('date_created')
-            ->order('id');
+            ->order('id')
+            ->limit($version, PHP_INT_MAX);
         $rows = $this->_dbh->fetchAll($select);
 
         $events = array();
@@ -202,6 +203,8 @@ class ZendDb implements IEventStore
         );
     }
 
-    /** @var Zend_Db_Adapter_Abstract */
+    /**
+     * @var Zend_Db_Adapter_Abstract
+     */
     private $_dbh;
 }
