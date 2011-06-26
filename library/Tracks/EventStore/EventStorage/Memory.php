@@ -118,12 +118,18 @@ class Memory implements IEventStore
      */
     private function _incVersion(Guid $guid)
     {
-        $this->entities[(string) $guid]['version']++;
+        isset($this->entities[(string) $guid])
+            ? $this->entities[(string) $guid]['version']++
+            : $this->entities[(string) $guid] = array('version' => 1);
     }
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $_events = array();
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $_entities = array();
 }
