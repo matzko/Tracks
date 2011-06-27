@@ -29,6 +29,6 @@ class Welcomer implements \Tracks\EventHandler\IEventHandler
 
     public function execute(\Tracks\Event\Base $event)
     {
-        echo "Welcome aboard, {$event->name}!\n";
+        echo 'Welcome aboard, '.$event->name.'!'.PHP_EOL;
     }
 }
