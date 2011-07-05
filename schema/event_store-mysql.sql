@@ -9,7 +9,7 @@
 
 CREATE TABLE IF NOT EXISTS entity (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
-  guid char(23) NOT NULL,
+  guid char(36) NOT NULL,
   `type` varchar(255) NOT NULL,
   version int(10) unsigned NOT NULL DEFAULT '0',
   date_created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS entity (
 
 CREATE TABLE IF NOT EXISTS `event` (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
-  guid char(23) NOT NULL,
+  guid char(36) NOT NULL,
   `data` text NOT NULL,
   date_created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
