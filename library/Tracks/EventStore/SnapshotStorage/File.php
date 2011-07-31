@@ -6,30 +6,25 @@
  *
  * @category   Tracks
  * @package    EventStore
- * @subpackage SnapshotStorage
+ * @subpackage Tracks_EventStore_SnapshotStorage
  * @author     Sean Crystal <sean.crystal@gmail.com>
  * @copyright  2011 Sean Crystal
  * @license    http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link       https://github.com/spiralout/Tracks
  */
-
-namespace Tracks\EventStore\SnapshotStorage;
-use Tracks\EventStore\ISnapshotStore;
-use Tracks\Model\Entity, Tracks\Model\Guid;
-
 
 /**
  * Filesystem-based Snapshot Storage
  *
  * @category   Tracks
  * @package    EventStore
- * @subpackage SnapshotStorage
+ * @subpackage Tracks_EventStore_SnapshotStorage
  * @author     Sean Crystal <sean.crystal@gmail.com>
  * @copyright  2011 Sean Crystal
  * @license    http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link       https://github.com/spiralout/Tracks
  */
-class File implements ISnapshotStore
+class Tracks_EventStore_SnapshotStorage_File implements Tracks_EventStore_ISnapshotStore
 {
 
     /**
@@ -48,12 +43,12 @@ class File implements ISnapshotStore
     /**
      * Save an Entity
      *
-     * @param Entity $entity An Entity
+     * @param Tracks_Model_Entity $entity An Tracks_Model_Entity
      *
      * @return null
-     * @see Tracks\EventStore.ISnapshotStore::save()
+     * @see Tracks_EventStore_ISnapshotStore::save()
      */
-    public function save(Entity $entity)
+    public function save(Tracks_Model_Entity $entity)
     {
         file_put_contents(
             $this->_getFilename($entity->getGuid()), serialize($entity)
@@ -63,12 +58,12 @@ class File implements ISnapshotStore
     /**
      * Load an Entity
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
-     * @return Entity|null
-     * @see Tracks\EventStore.ISnapshotStore::load()
+     * @return Tracks_Model_Entity|null
+     * @see Tracks_EventStore_ISnapshotStore::load()
      */
-    public function load(Guid $guid)
+    public function load(Tracks_Model_Guid $guid)
     {
         if (file_exists($this->_getFilename($guid))) {
             return unserialize(file_get_contents($this->_getFilename($guid)));
@@ -80,11 +75,11 @@ class File implements ISnapshotStore
     /**
      * Get the filename of an Entity by its GUID
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
      * @return string
      */
-    private function _getFilename(Guid $guid)
+    private function _getFilename(Tracks_Model_Guid $guid)
     {
         return $this->_directory
             .DIRECTORY_SEPARATOR

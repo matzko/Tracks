@@ -12,8 +12,6 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\Model;
-
 /**
  * Aggregate root base class
  *
@@ -27,6 +25,6 @@ namespace Tracks\Model;
  * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link      https://github.com/spiralout/Tracks
  */
-abstract class AggregateRoot extends Entity
+abstract class Tracks_Model_AggregateRoot extends Tracks_Model_Entity
 {
 }

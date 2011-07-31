@@ -12,8 +12,6 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\EventHandler;
-
 /**
  * Interface for event routers
  *
@@ -24,16 +22,16 @@ namespace Tracks\EventHandler;
  * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link      https://github.com/spiralout/Tracks
  */
-interface IEventRouter
+interface Tracks_EventHandler_IEventRouter
 {
     /**
      * Route an event
      *
-     * @param Tracks\Event\Base $event An Event
+     * @param Tracks_Event_Base $event An Event
      *
      * @return null
      */
-    public function route(\Tracks\Event\Base $event);
+    public function route(Tracks_Event_Base $event);
 
     /**
      * Add an event handler to the routing table

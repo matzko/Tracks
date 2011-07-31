@@ -24,7 +24,7 @@
  * @license    http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link       https://github.com/spiralout/Tracks
  */
-class Employee extends \Tracks\Model\Entity
+class Employee extends Tracks_Model_Entity
 {
     public function __construct($guid, $name)
     {
@@ -52,7 +52,7 @@ class Employee extends \Tracks\Model\Entity
     public $position;
 }
 
-class EventEmployeeChangeTitle extends \Tracks\Event\Base
+class EventEmployeeChangeTitle extends Tracks_Event_Base
 {
     public function __construct($guid, $title)
     {

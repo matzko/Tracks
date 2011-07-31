@@ -12,9 +12,6 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\EventStore;
-use \Tracks\Model\Guid, \Tracks\Model\Entity;
-
 /**
  * Interface for event stores
  *
@@ -25,43 +22,43 @@ use \Tracks\Model\Guid, \Tracks\Model\Entity;
  * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link      https://github.com/spiralout/Tracks
  */
-interface IEventStore
+interface Tracks_EventStore_IEventStore
 {
 
     /**
      * Get all the events associated with an entity by guid
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
      * @return array
      */
-    public function getAllEvents(Guid $guid);
+    public function getAllEvents(Tracks_Model_Guid $guid);
 
     /**
      * Get all events associated with an entity starting from a particular version
      *
-     * @param Guid $guid    An Entity's GUID
+     * @param Tracks_Model_Guid $guid    An Entity's GUID
      * @param int  $version That Entity's version number
      *
      * @return array
      */
-    public function getEventsFromVersion(Guid $guid, $version);
+    public function getEventsFromVersion(Tracks_Model_Guid $guid, $version);
 
     /**
      * Get the object type associated with a guid
      *
-     * @param Guid $guid Any GUID
+     * @param Tracks_Model_Guid $guid Any GUID
      *
      * @return string
      */
-    public function getType(Guid $guid);
+    public function getType(Tracks_Model_Guid $guid);
 
     /**
      * Save an entity and it's events
      *
-     * @param Entity $entity An Entity
+     * @param Tracks_Model_Entity $entity An Entity
      *
      * @return null
      */
-    public function save(Entity $entity);
+    public function save(Tracks_Model_Entity $entity);
 }

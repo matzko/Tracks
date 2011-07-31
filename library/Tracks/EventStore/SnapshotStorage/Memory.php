@@ -13,10 +13,6 @@
  * @link       https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\EventStore\SnapshotStorage;
-use \Tracks\EventStore\ISnapshotStore;
-use \Tracks\Model\Guid, \Tracks\Model\Entity;
-
 /**
  * In-Memory snapshot store implementation
  *
@@ -28,17 +24,17 @@ use \Tracks\Model\Guid, \Tracks\Model\Entity;
  * @license    http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link       https://github.com/spiralout/Tracks
  */
-class Memory implements ISnapshotStore
+class Tracks_EventStore_SnapshotStorage_Memory implements Tracks_EventStore_ISnapshotStore
 {
 
     /**
      * Load a snapshot by guid
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
-     * @return Tracks\Model\Entity
+     * @return Tracks_Model_Entity
      */
-    public function load(Guid $guid)
+    public function load(Tracks_Model_Guid $guid)
     {
         if (isset($this->_snapshots[(string) $guid])) {
             return $this->_snapshots[(string) $guid];
@@ -50,11 +46,11 @@ class Memory implements ISnapshotStore
     /**
      * Save a snapshot of an entity
      *
-     * @param Entity $entity An Entity
+     * @param Tracks_Model_Entity $entity An Entity
      *
      * @return null
      */
-    public function save(Entity $entity)
+    public function save(Tracks_Model_Entity $entity)
     {
         $this->_snapshots[(string) $entity->getGuid()] = clone $entity;
     }

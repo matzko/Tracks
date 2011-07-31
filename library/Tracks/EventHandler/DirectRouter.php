@@ -12,8 +12,6 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\EventHandler;
-
 /**
  * Routes directly to an event handler object in the same process
  *
@@ -26,17 +24,17 @@ namespace Tracks\EventHandler;
  */
 
 
-class DirectRouter implements IEventRouter
+class Tracks_EventHandler_DirectRouter implements ITracks_EventHandler_EventRouter
 {
 
     /**
      * Route an event
      *
-     * @param Tracks\Event\Base $event An Event
+     * @param Tracks_Event_Base $event An Event
      *
      * @return null
      */
-    public function route(\Tracks\Event\Base $event)
+    public function route(Tracks_Event_Base $event)
     {
         if (isset($this->_handlers[get_class($event)])) {
             foreach ($this->_handlers[get_class($event)] as $handler) {
@@ -57,7 +55,7 @@ class DirectRouter implements IEventRouter
      * required parameters on it's constructor.
      *
      * @param string               $eventClass The Event classname
-     * @param IEventHandler|string $handler    An EventHandler
+     * @param Tracks_EventHandler_IEventHandler|string $handler    An EventHandler
      *
      * @return null
      */
@@ -66,7 +64,7 @@ class DirectRouter implements IEventRouter
         assert('is_string($eventClass)');
         assert('class_exists($eventClass)');
         if (is_object($handler)
-            && !($handler instanceof \Tracks\EventHandler\IEventHandler)
+            && !($handler instanceof Tracks_EventHandler_IEventHandler)
         ) {
             throw new LogicException('Event handlers must implement IEventHandler');
         }

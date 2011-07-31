@@ -13,10 +13,6 @@
  * @link       https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\EventStore\EventStorage;
-use Tracks\EventStore\IEventStore;
-use Tracks\Model\Guid, Tracks\Model\Entity;
-
 /**
  * Zend_Db based implementation of the event store.
  *
@@ -31,7 +27,7 @@ use Tracks\Model\Guid, Tracks\Model\Entity;
  * @license    http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link       https://github.com/spiralout/Tracks
  */
-class ZendDb implements IEventStore
+class Tracks_EventStore_EventStorage_ZendDb implements Tracks_EventStore_IEventStore
 {
 
     /**
@@ -49,11 +45,11 @@ class ZendDb implements IEventStore
     /**
      * Get all events associated with a guid
      *
-     * @param Guid $guid Any GUID
+     * @param Tracks_Model_Guid $guid Any GUID
      *
      * @return array
      */
-    public function getAllEvents(Guid $guid)
+    public function getAllEvents(Tracks_Model_Guid $guid)
     {
         $select = $this->_dbh->select()
             ->from('event', array('*'))
@@ -73,11 +69,11 @@ class ZendDb implements IEventStore
     /**
      * Save an entity to the data store
      *
-     * @param Entity $entity An Entity
+     * @param Tracks_Model_Entity $entity An Entity
      *
      * @return null
      */
-    public function save(Entity $entity)
+    public function save(Tracks_Model_Entity $entity)
     {
         foreach ($entity->getAllEntities() as $child) {
             $this->_createEntity($child);
@@ -92,12 +88,12 @@ class ZendDb implements IEventStore
     /**
      * Get events associated with a guid, starting with a specific version number
      *
-     * @param Guid $guid    An Entity's GUID
+     * @param Tracks_Model_Guid $guid    An Entity's GUID
      * @param int  $version That Entity's version number
      *
      * @return array
      */
-    public function getEventsFromVersion(Guid $guid, $version)
+    public function getEventsFromVersion(Tracks_Model_Guid $guid, $version)
     {
         assert('is_int($version)');
         $select = $this->_dbh->select()
@@ -119,11 +115,11 @@ class ZendDb implements IEventStore
     /**
      * Get the object type of an entity
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
      * @return string
      */
-    public function getType(Guid $guid)
+    public function getType(Tracks_Model_Guid $guid)
     {
         if (is_null($row = $this->_getEntityByGuid($guid))) {
             return null;
@@ -150,11 +146,11 @@ class ZendDb implements IEventStore
     /**
      * Create an entity record
      *
-     * @param Entity $entity An Entity
+     * @param Tracks_Model_Entity $entity An Entity
      *
      * @return null
      */
-    private function _createEntity(Entity $entity)
+    private function _createEntity(Tracks_Model_Entity $entity)
     {
         if (is_null($this->_getEntityByGuid($entity->getGuid()))) {
             $this->_dbh->insert(
@@ -170,11 +166,11 @@ class ZendDb implements IEventStore
     /**
      * Get the entity record by guid
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
      * @return array
      */
-    private function _getEntityByGuid(Guid $guid)
+    private function _getEntityByGuid(Tracks_Model_Guid $guid)
     {
         $select = $this->_dbh->select()
             ->from('event', array('*'))
@@ -190,11 +186,11 @@ class ZendDb implements IEventStore
     /**
      * Increment the version of an entity in the data store
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
      * @return null
      */
-    private function _incVersion(Guid $guid)
+    private function _incVersion(Tracks_Model_Guid $guid)
     {
         $this->_dbh->update(
         	'entity',

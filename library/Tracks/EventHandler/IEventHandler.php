@@ -12,8 +12,6 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\EventHandler;
-
 /**
  * Interface for event handlers
  *
@@ -24,14 +22,14 @@ namespace Tracks\EventHandler;
  * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link      https://github.com/spiralout/Tracks
  */
-interface IEventHandler
+interface Tracks_EventHandler_IEventHandler
 {
     /**
      * Execute an event
      *
-     * @param Tracks\Event\Base $event An Event
+     * @param Tracks_Event_Base $event An Event
      *
      * @return null
      */
-    public function execute(\Tracks\Event\Base $event);
+    public function execute(Tracks_Event_Base $event);
 }

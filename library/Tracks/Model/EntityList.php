@@ -12,9 +12,6 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\Model;
-use Tracks\Model\Entity;
-
 /**
  * Entity list domain object
  *
@@ -27,18 +24,18 @@ use Tracks\Model\Entity;
  * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link      https://github.com/spiralout/Tracks
  */
-class EntityList
-implements \ArrayAccess, \Iterator, \Countable
+class Tracks_Model_EntityList
+implements ArrayAccess, Iterator, Countable
 {
 
     /**
      * Add an entity to the list
      *
-     * @param Entity $entity An Entity
+     * @param Tracks_Model_Entity $entity An Entity
      *
      * @return null
      */
-    public function add(Entity $entity)
+    public function add(Tracks_Model_Entity $entity)
     {
         $this->_items[(string) $entity->getGuid()] = $entity;
         $this->_guids[] = (string) $entity->getGuid();
@@ -47,11 +44,11 @@ implements \ArrayAccess, \Iterator, \Countable
     /**
      * Find an entity by it's guid
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
      * @return Tracks\Model\Entity
      */
-    public function find(Guid $guid)
+    public function find(Tracks_Model_Guid $guid)
     {
         if (isset($this->_items[(string) $guid])) {
             return $this->_items[(string) $guid];
@@ -63,11 +60,11 @@ implements \ArrayAccess, \Iterator, \Countable
     /**
      * Remove an entity from the list by guid
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
      * @return null
      */
-    public function remove(Guid $guid)
+    public function remove(Tracks_Model_Guid $guid)
     {
         $this->_guids = array_splice(
             $this->_guids,
@@ -139,7 +136,7 @@ implements \ArrayAccess, \Iterator, \Countable
     /**
      * offsetExists
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
      * @return boolean
      * @see ArrayAccess::offsetExists()
@@ -152,9 +149,9 @@ implements \ArrayAccess, \Iterator, \Countable
     /**
      * offsetGet
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
-     * @return Entity
+     * @return Tracks_Model_Entity
      * @see ArrayAccess::offsetGet()
      */
     public function offsetGet($guid)
@@ -180,7 +177,7 @@ implements \ArrayAccess, \Iterator, \Countable
     /**
      * offsetUnset
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
      * @return null
      * @see ArrayAccess::offsetUnset()
@@ -198,7 +195,7 @@ implements \ArrayAccess, \Iterator, \Countable
     /**
      * current
      *
-     * @return Entity
+     * @return Tracks_Model_Entity
      * @see Iterator::current()
      */
     public function current()
@@ -209,7 +206,7 @@ implements \ArrayAccess, \Iterator, \Countable
     /**
      * key
      *
-     * @return Guid
+     * @return Tracks_Model_Guid
      * @see Iterator::key()
      */
     public function key()

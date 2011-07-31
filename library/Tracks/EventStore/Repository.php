@@ -12,10 +12,6 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\EventStore;
-use Tracks\EventHandler\IEventRouter;
-use Tracks\Model\AggregateRoot, Tracks\Model\Entity, Tracks\Model\Guid;
-
 /**
  * Repository to load and save domain event-based entities
  *
@@ -26,7 +22,7 @@ use Tracks\Model\AggregateRoot, Tracks\Model\Entity, Tracks\Model\Guid;
  * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link      https://github.com/spiralout/Tracks
  */
-class Repository
+class Tracks_EventStore_Repository
 {
 
     const SNAPSHOT_FREQUENCY = 100;
@@ -35,14 +31,14 @@ class Repository
      * Constructor
      *
      * @param IEventStore    $eventStore    The Event Store
-     * @param IEventRouter   $router        The Event Router
+     * @param Tracks_EventHandler_IEventRouter   $router        The Event Router
      * @param ISnapshotStore $snapshotStore The Snapshot Store
      *
      * @return null
      */
     public function __construct(
         IEventStore $eventStore,
-        IEventRouter $router,
+        Tracks_EventHandler_IEventRouter $router,
         ISnapshotStore $snapshotStore
     ) {
         $this->eventStore = $eventStore;
@@ -54,11 +50,11 @@ class Repository
     /**
      * Load an entity by a guid
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
-     * @return \Tracks\Model\AggregateRoot
+     * @return Tracks_Model_AggregateRoot
      */
-    public function load(Guid $guid)
+    public function load(Tracks_Model_Guid $guid)
     {
         if (is_null($aggregateRoot = $this->_loadEntity($guid))) {
             return null;
@@ -91,11 +87,11 @@ class Repository
     /**
      * Save an aggregate root, and call event handlers for all new events
      *
-     * @param AggregateRoot $aggregateRoot An Aggregate Root
+     * @param Tracks_Model_AggregateRoot $aggregateRoot An Aggregate Root
      *
      * @return null
      */
-    public function save(AggregateRoot $aggregateRoot)
+    public function save(Tracks_Model_AggregateRoot $aggregateRoot)
     {
         if (count($aggregateRoot->getAllAppliedEvents()) == 0) {
             return;
@@ -110,11 +106,11 @@ class Repository
     /**
      * Store an entity in the identity map
      *
-     * @param Entity $entity An Entity
+     * @param Tracks_Model_Entity $entity An Entity
      *
      * @return null
      */
-    private function _storeInIdentityMap(Entity $entity)
+    private function _storeInIdentityMap(Tracks_Model_Entity $entity)
     {
         $this->_identityMap[(string) $entity->getGuid()] = $entity;
     }
@@ -122,11 +118,11 @@ class Repository
     /**
      * Attempt to load an entity from the identity map
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
-     * @return \Tracks\Model\Entity
+     * @return Tracks_Model_Entity
      */
-    private function _loadFromIdentityMap(Guid $guid)
+    private function _loadFromIdentityMap(Tracks_Model_Guid $guid)
     {
         return isset($this->_identityMap[(string) $guid])
             ? $this->_identityMap[(string) $guid]
@@ -136,12 +132,12 @@ class Repository
     /**
      * Load an entity from it's event history
      *
-     * @param Guid   $guid   An Entity's GUID
-     * @param Entity $entity That Entity
+     * @param Tracks_Model_Guid   $guid   An Entity's GUID
+     * @param Tracks_Model_Entity $entity That Entity
      *
-     * @return \Tracks\Model\Entity
+     * @return Tracks_Model_Entity
      */
-    private function _loadFromHistory(Guid $guid, Entity $entity = null)
+    private function _loadFromHistory(Tracks_Model_Guid $guid, Tracks_Model_Entity $entity = null)
     {
         $events = $this->eventStore->getAllEvents($guid);
 
@@ -161,12 +157,12 @@ class Repository
     /**
      * Load an entity into memory
      *
-     * @param Guid   $guid   An Entity's GUID
-     * @param Entity $entity That Entity
+     * @param Tracks_Model_Guid   $guid   An Entity's GUID
+     * @param Tracks_Model_Entity $entity That Entity
      *
-     * @return Tracks\Model\Entity
+     * @return Tracks_Model_Entity
      */
-    private function _loadEntity(Guid $guid, Entity $entity = null)
+    private function _loadEntity(Tracks_Model_Guid $guid, Tracks_Model_Entity $entity = null)
     {
         $loadedEntity = $this->_loadFromIdentityMap($guid);
 
@@ -190,11 +186,11 @@ class Repository
     /**
      * Route all new events on an aggregate to their appropriate handlers
      *
-     * @param AggregateRoot $aggregateRoot An Aggregate Root
+     * @param Tracks_Model_AggregateRoot $aggregateRoot An Aggregate Root
      *
      * @return null
      */
-    private function _routeEvents(AggregateRoot $aggregateRoot)
+    private function _routeEvents(Tracks_Model_AggregateRoot $aggregateRoot)
     {
         foreach ($aggregateRoot->getAllAppliedEvents() as $event) {
             $this->router->route($event);
@@ -204,11 +200,11 @@ class Repository
     /**
      * Attempt to load an entity from a snapshot
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
-     * @return \Tracks\Model\Entity
+     * @return Tracks_Model_Entity
      */
-    private function _loadFromSnapshot(Guid $guid)
+    private function _loadFromSnapshot(Tracks_Model_Guid $guid)
     {
         if (is_null($entity = $this->snapshotStore->load($guid))) {
             return null;
@@ -229,11 +225,11 @@ class Repository
      *
      * This should be called after an entity's events have been saved.
      *
-     * @param AggregateRoot $aggregateRoot An Aggregate Root
+     * @param Tracks_Model_AggregateRoot $aggregateRoot An Aggregate Root
      *
      * @return null
      */
-    private function _updateVersionsAndClearEvents(AggregateRoot $aggregateRoot)
+    private function _updateVersionsAndClearEvents(Tracks_Model_AggregateRoot $aggregateRoot)
     {
         foreach ($aggregateRoot->getAllEntities() as $entity) {
             $entity->incVersion(count($entity->getAppliedEvents()));
@@ -244,11 +240,11 @@ class Repository
     /**
      * Attempt to save a snapshot for all entites in an aggregate root
      *
-     * @param AggregateRoot $aggregateRoot An Aggregate Root
+     * @param Tracks_Model_AggregateRoot $aggregateRoot An Aggregate Root
      *
      * @return null
      */
-    private function _saveSnapshots(AggregateRoot $aggregateRoot)
+    private function _saveSnapshots(Tracks_Model_AggregateRoot $aggregateRoot)
     {
         foreach ($aggregateRoot->getAllEntities() as $entity) {
             $this->_saveSnapshot($entity);
@@ -258,11 +254,11 @@ class Repository
     /**
      * Try to save a snapshot of an entity if frequency determines it is time
      *
-     * @param Entity $entity An Entity
+     * @param Tracks_Model_Entity $entity An Entity
      *
      * @return null
      */
-    private function _saveSnapshot(Entity $entity)
+    private function _saveSnapshot(Tracks_Model_Entity $entity)
     {
         $state = clone $entity;
         $state->clearAppliedEvents();

@@ -24,30 +24,30 @@
  * @license    http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link       https://github.com/spiralout/Tracks
  */
-class Employer extends \Tracks\Model\AggregateRoot
+class Employer extends Tracks_Model_AggregateRoot
 {
     public function __construct()
     {
-        $this->employees = new \Tracks\Model\EntityList;
+        $this->employees = new Tracks_Model_EntityList;
         $this->registerEvents();
     }
 
     public function create($name)
     {
-        $guid = \Tracks\Model\Guid::create();
+        $guid = Tracks_Model_Guid::create();
         $this->applyEvent(new EventEmployerCreated($guid, $name));
         return $guid;
     }
 
     public function addNewEmployee($name, $title)
     {
-        $employeeGuid = \Tracks\Model\Guid::create();
+        $employeeGuid = Tracks_Model_Guid::create();
         $this->applyEvent(new EventEmployeeAdded($this->getGuid(), $employeeGuid, $name));
         $this->employees->find($employeeGuid)->changeTitle($title);
         return $employeeGuid;
     }
 
-    public function changeEmployeeTitle(\Tracks\Model\Guid $employeeGuid, $title)
+    public function changeEmployeeTitle(Tracks_Model_Guid $employeeGuid, $title)
     {
         if ($employee = $this->employees->find($employeeGuid)) {
             $employee->changeTitle($title);
@@ -75,7 +75,7 @@ class Employer extends \Tracks\Model\AggregateRoot
     public $employees;
 }
 
-class EventEmployerCreated extends \Tracks\Event\Base
+class EventEmployerCreated extends Tracks_Event_Base
 {
     public function __construct($guid, $name)
     {
@@ -86,9 +86,9 @@ class EventEmployerCreated extends \Tracks\Event\Base
     public $name;
 }
 
-class EventEmployeeAdded extends \Tracks\Event\Base
+class EventEmployeeAdded extends Tracks_Event_Base
 {
-    public function __construct(\Tracks\Model\Guid $guid, $employeeGuid, $name)
+    public function __construct(Tracks_Model_Guid $guid, $employeeGuid, $name)
     {
         parent::__construct($guid);
         $this->employeeGuid = $employeeGuid;

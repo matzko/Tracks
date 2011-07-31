@@ -12,9 +12,6 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\Event;
-use Tracks\Model\Guid;
-
 /**
  * Domain Event base class
  *
@@ -25,17 +22,17 @@ use Tracks\Model\Guid;
  * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link      https://github.com/spiralout/Tracks
  */
-abstract class Base
+abstract class Tracks_Event_Base
 {
 
     /**
      * Constructor
      *
-     * @param Guid $guid Event GUID
+     * @param Tracks_Model_Guid $guid Event GUID
      *
      * @return null
      */
-    public function __construct(Guid $guid)
+    public function __construct(Tracks_Model_Guid $guid)
     {
         $this->guid = $guid;
     }
@@ -43,13 +40,13 @@ abstract class Base
     /**
      * Get the entity guid this event is associated with
      *
-     * @return Tracks\Model\Guid
+     * @return Tracks_Model_Guid
      */
     public function getGuid()
     {
         return $this->guid;
     }
 
-    /** @var \Tracks\Model\Guid */
+    /** @var Tracks_Model_Guid */
     public $guid;
 }

@@ -12,9 +12,6 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\Model;
-use Tracks\Exception\HandlerAlreadyRegistered;
-
 /**
  * Domain Entity base class
  *
@@ -25,7 +22,7 @@ use Tracks\Exception\HandlerAlreadyRegistered;
  * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link      https://github.com/spiralout/Tracks
  */
-abstract class Entity
+abstract class Tracks_Model_Entity
 {
 
     /**
@@ -46,7 +43,7 @@ abstract class Entity
     /**
      * Get this entity's guid
      *
-     * @return Tracks\Model\Guid
+     * @return Tracks_Model_Guid
      */
     public function getGuid()
     {
@@ -96,7 +93,7 @@ abstract class Entity
         $events = array();
 
         foreach ($this as $property) {
-            if ($property instanceof Entity || $property instanceof EntityList) {
+            if ($property instanceof Tracks_Model_Entity || $property instanceof Tracks_Model_EntityList) {
                 $events = array_merge($events, $property->getAllAppliedEvents());
             }
         }
@@ -122,7 +119,7 @@ abstract class Entity
     public function clearAllAppliedEvents()
     {
         foreach ($this as $property) {
-            if ($property instanceof Entity || $property instanceof EntityList) {
+            if ($property instanceof Entity || $property instanceof Tracks_Model_EntityList) {
                 $property->clearAllAppliedEvents();
             }
         }
@@ -160,7 +157,7 @@ abstract class Entity
         $entities = array();
 
         foreach ($this as $property) {
-            if ($property instanceof Entity || $property instanceof EntityList) {
+            if ($property instanceof Entity || $property instanceof Tracks_Model_EntityList) {
                 $entities = array_merge($entities, $property->getAllEntities());
             }
         }
@@ -181,11 +178,11 @@ abstract class Entity
     /**
      * Find a handler method registered with an event and call it if it exists
      *
-     * @param \Tracks\Event\Base $event An Event
+     * @param Tracks_Event_Base $event An Event
      *
      * @return null
      */
-    protected function handleDomainEvent(\Tracks\Event\Base $event)
+    protected function handleDomainEvent(Tracks_Event_Base $event)
     {
         if ($handler_name = $this->_getHandlerName($event)) {
             $this->$handler_name($event);
@@ -195,11 +192,11 @@ abstract class Entity
     /**
      * Apply a new event to this domain object
      *
-     * @param \Tracks\Event\Base $event An Event
+     * @param Tracks_Event_Base $event An Event
      *
      * @return null
      */
-    protected function applyEvent(\Tracks\Event\Base $event)
+    protected function applyEvent(Tracks_Event_Base $event)
     {
         $this->handleDomainEvent($event);
         $this->appliedEvents[] = $event;
@@ -220,7 +217,7 @@ abstract class Entity
         assert('method_exists($this, $handlerMethod)');
 
         if (isset($this->handlers[$eventName])) {
-            throw new HandlerAlreadyRegistered(
+            throw new Tracks_Exception_HandlerAlreadyRegistered(
                 get_class($this),
                 $eventName,
                 $this->handlers[$eventName]
@@ -233,18 +230,18 @@ abstract class Entity
     /**
      * Get the name of the handler method for an event
      *
-     * @param \Tracks\Event\Base $event An Event
+     * @param Tracks_Event_Base $event An Event
      *
      * @return string
      */
-    private function _getHandlerName(\Tracks\Event\Base $event)
+    private function _getHandlerName(Tracks_Event_Base $event)
     {
         return isset($this->handlers[get_class($event)])
             ? $this->handlers[get_class($event)]
             : null;
     }
 
-    /** @var \Tracks\Model\Guid */
+    /** @var Tracks_Model_Guid */
     protected $guid;
 
     /** @var boolean */

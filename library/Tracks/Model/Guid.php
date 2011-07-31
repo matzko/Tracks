@@ -12,8 +12,6 @@
  * @link      https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\Model;
-
 /**
  * Globally-Unique Identifier (GUID) implementation
  *
@@ -26,7 +24,7 @@ namespace Tracks\Model;
  * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link      https://github.com/spiralout/Tracks
  */
-class Guid
+class Tracks_Model_Guid
 {
 
     /**
@@ -55,11 +53,11 @@ class Guid
     /**
      * Guid factory method
      *
-     * @return \Tracks\Model\Guid
+     * @return Tracks_Model_Guid
      */
     static public function create()
     {
-        return new self(Guid::uuid());
+        return new self(Tracks_Model_Guid::uuid());
     }
 
     /**

@@ -24,10 +24,10 @@
  * @license    http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link       https://github.com/spiralout/Tracks
  */
-class Welcomer implements \Tracks\EventHandler\IEventHandler
+class Welcomer implements Tracks_EventHandler_IEventHandler
 {
 
-    public function execute(\Tracks\Event\Base $event)
+    public function execute(Tracks_Event_Base $event)
     {
         echo 'Welcome aboard, '.$event->name.'!'.PHP_EOL;
     }

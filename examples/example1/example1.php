@@ -19,13 +19,13 @@ require_once 'Employee.php';
 require_once 'Position.php';
 require_once 'Welcomer.php';
 
-$router = new \Tracks\EventHandler\DirectRouter;
+$router = new Tracks_EventHandler_DirectRouter;
 $router->addHandler('EventEmployeeAdded', 'Welcomer');
 
-$repository = new \Tracks\EventStore\Repository(
-    new \Tracks\EventStore\EventStorage\Memory,
+$repository = new Tracks_EventStore_Repository(
+    new Tracks_EventStore_EventStorage_Memory,
     $router,
-    new \Tracks\EventStore\SnapshotStorage\Memory
+    new Tracks_EventStore_SnapshotStorage_Memory
 );
 
 $employer = new Employer;

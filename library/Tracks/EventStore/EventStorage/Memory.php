@@ -13,10 +13,6 @@
  * @link       https://github.com/spiralout/Tracks
  */
 
-namespace Tracks\EventStore\EventStorage;
-use \Tracks\EventStore\IEventStore;
-use \Tracks\Model\Guid, \Tracks\Model\Entity;
-
 /**
  * In-Memory event store implementation
  *
@@ -28,17 +24,17 @@ use \Tracks\Model\Guid, \Tracks\Model\Entity;
  * @license    http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link       https://github.com/spiralout/Tracks
  */
-class Memory implements IEventStore
+class Tracks_EventStore_EventStorage_Memory implements Tracks_EventStore_IEventStore
 {
 
     /**
      * Get all the events associated with an entity by guid
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
      * @return array
      */
-    public function getAllEvents(Guid $guid)
+    public function getAllEvents(Tracks_Model_Guid $guid)
     {
         return $this->_events[(string) $guid];
     }
@@ -46,12 +42,12 @@ class Memory implements IEventStore
     /**
      * Get all events associated with an entity starting from a particular version
      *
-     * @param Guid $guid    An Entity's GUID
+     * @param Tracks_Model_Guid $guid    An Entity's GUID
      * @param int  $version That Entity's version number
      *
      * @return array
      */
-    public function getEventsFromVersion(Guid $guid, $version)
+    public function getEventsFromVersion(Tracks_Model_Guid $guid, $version)
     {
         assert('is_int($version)');
         return array_slice($this->_events[(string) $guid], $version);
@@ -60,11 +56,11 @@ class Memory implements IEventStore
     /**
      * Save an entity and it's events
      *
-     * @param Entity $entity An Entity
+     * @param Tracks_Model_Entity $entity An Entity
      *
      * @return null
      */
-    public function save(Entity $entity)
+    public function save(Tracks_Model_Entity $entity)
     {
         foreach ($entity->getAllEntities() as $provider) {
             $this->_createEntity($provider);
@@ -79,11 +75,11 @@ class Memory implements IEventStore
     /**
      * Get the object type associated with a guid
      *
-     * @param Guid $guid Any GUID
+     * @param Tracks_Model_Guid $guid Any GUID
      *
      * @return string
      */
-    public function getType(Guid $guid)
+    public function getType(Tracks_Model_Guid $guid)
     {
         return $this->entities[(string) $guid]['type'];
     }
@@ -91,11 +87,11 @@ class Memory implements IEventStore
     /**
      * Create a new entity entry if it doesn't already exist
      *
-     * @param Entity $entity An Entity
+     * @param Tracks_Model_Entity $entity An Entity
      *
      * @return null
      */
-    private function _createEntity(Entity $entity)
+    private function _createEntity(Tracks_Model_Entity $entity)
     {
         if (!isset($this->_entities[(string) $entity->getGuid()])) {
             $this->_entities[(string) $entity->getGuid()] = array(
@@ -112,11 +108,11 @@ class Memory implements IEventStore
     /**
      * Increment the version of an entity
      *
-     * @param Guid $guid An Entity's GUID
+     * @param Tracks_Model_Guid $guid An Entity's GUID
      *
      * @return null
      */
-    private function _incVersion(Guid $guid)
+    private function _incVersion(Tracks_Model_Guid $guid)
     {
         isset($this->entities[(string) $guid])
             ? $this->entities[(string) $guid]['version']++

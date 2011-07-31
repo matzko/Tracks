@@ -5,14 +5,12 @@
  * PHP Version 5.3
  *
  * @category  Tracks
- * @package   Exception
+ * @package   Tracks_Exception
  * @author    Sean Crystal <sean.crystal@gmail.com>
  * @copyright 2011 Sean Crystal
  * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link      https://github.com/spiralout/Tracks
  */
-
-namespace Tracks\Exception;
 
 /**
  * Handler Already Registered
@@ -20,13 +18,13 @@ namespace Tracks\Exception;
  * An attempt to register an event on a domain that has already been registered.
  *
  * @category  Tracks
- * @package   Exception
+ * @package   Tracks_Exception
  * @author    Sean Crystal <sean.crystal@gmail.com>
  * @copyright 2011 Sean Crystal
  * @license   http://www.opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  * @link      https://github.com/spiralout/Tracks
  */
-class HandlerAlreadyRegistered extends Base
+class Tracks_Exception_HandlerAlreadyRegistered extends Tracks_Exception_Base
 {
     /**
      * Constructor
