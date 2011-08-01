@@ -33,11 +33,11 @@ class Tracks_EventStore_EventStorage_ZendDb implements Tracks_EventStore_IEventS
     /**
      * Constructor
      *
-     * @param \Zend_Db_Adapter_Abstract $dbh A Zend Database Adapter
+     * @param Zend_Db_Adapter_Abstract $dbh A Zend Database Adapter
      *
      * @return null
      */
-    public function __construct(\Zend_Db_Adapter_Abstract $dbh)
+    public function __construct(Zend_Db_Adapter_Abstract $dbh)
     {
         $this->_dbh = $dbh;
     }
@@ -131,11 +131,11 @@ class Tracks_EventStore_EventStorage_ZendDb implements Tracks_EventStore_IEventS
     /**
      * Create an event record
      *
-     * @param \Tracks\Event\Base $event An Event
+     * @param Tracks_Event_Base $event An Event
      *
      * @return null
      */
-    private function _createEvent(\Tracks\Event\Base $event)
+    private function _createEvent(Tracks_Event_Base $event)
     {
         $this->_dbh->insert(
         	'event',
@@ -194,7 +194,7 @@ class Tracks_EventStore_EventStorage_ZendDb implements Tracks_EventStore_IEventS
     {
         $this->_dbh->update(
         	'entity',
-            array('version' => new \Zend_Db_Expr('(version + 1)')),
+            array('version' => new Zend_Db_Expr('(version + 1)')),
             array('guid = ?' => (string) $guid)
         );
     }
