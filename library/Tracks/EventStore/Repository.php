@@ -30,16 +30,16 @@ class Tracks_EventStore_Repository
     /**
      * Constructor
      *
-     * @param IEventStore    $eventStore    The Event Store
+     * @param Tracks_EventStore_IEventStore    $eventStore    The Event Store
      * @param Tracks_EventHandler_IEventRouter   $router        The Event Router
-     * @param ISnapshotStore $snapshotStore The Snapshot Store
+     * @param Tracks_EventStore_ISnapshotStore $snapshotStore The Snapshot Store
      *
      * @return null
      */
     public function __construct(
-        IEventStore $eventStore,
+        Tracks_EventStore_IEventStore $eventStore,
         Tracks_EventHandler_IEventRouter $router,
-        ISnapshotStore $snapshotStore
+        Tracks_EventStore_ISnapshotStore $snapshotStore
     ) {
         $this->eventStore = $eventStore;
         $this->snapshotStore = $snapshotStore;

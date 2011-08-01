@@ -24,7 +24,7 @@
  */
 
 
-class Tracks_EventHandler_DirectRouter implements ITracks_EventHandler_EventRouter
+class Tracks_EventHandler_DirectRouter implements Tracks_EventHandler_IEventRouter
 {
 
     /**
